@@ -1,6 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
 #include "Player.h"
+#include <vector>
 
 using namespace KamataEngine;
 
@@ -35,6 +36,7 @@ public:
 
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
+	std::vector<WorldTransform*> worldTransformBlocks_;
 
 	// デストラクタ
 	~GameScene();

@@ -5,7 +5,7 @@ class Player {
 public:
 
 	// 初期化関数
-	void Initialize(KamataEngine::Model* model, uint32_t texturHandle, KamataEngine::Camera* camera);
+	void Initialize(Model* model, uint32_t texturHandle,Camera* camera);
 
 	// 更新関数
 	void Update();
