@@ -2,7 +2,7 @@
 using namespace KamataEngine;
 
 
-void Player::Initialize(KamataEngine::Model* model, uint32_t texturHandle, KamataEngine::Camera* camera) {
+void Player::Initialize(Model* model, uint32_t texturHandle, Camera* camera) {
 
 	// NULLポインタチェック
 	assert(model);

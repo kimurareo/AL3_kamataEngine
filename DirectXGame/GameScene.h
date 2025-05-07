@@ -23,20 +23,30 @@ public:
 	uint32_t texturHandle_ = 0;
 
 	// 3Dモデル
-	KamataEngine::Model* model_ = nullptr;
+	Model* model_ = nullptr;
+
+	// ブロックの3Dモデルデータ
+	Model* modelBlock_ = Model::CreateFromOBJ("cube");
 
 	// ワールドトランスフォーム
-	KamataEngine::WorldTransform worldTransform_;
+	WorldTransform worldTransform_;
 
 	// カメラ
-	KamataEngine::Camera Camera_;
+    Camera camera_;
 	
 	// 自キャラ
 	Player* player_ = nullptr;
 
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
+	// デバッグカメラの生成
+	DebugCamera* debugCamera_ = nullptr;
+
+
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
-	std::vector<WorldTransform*> worldTransformBlocks_;
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
 	// デストラクタ
 	~GameScene();
