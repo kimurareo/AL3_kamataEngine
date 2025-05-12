@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "Player.h"
+#include "Skydome.h"
 #include "KamataEngine.h"
 #include "MyMath.h"
 
@@ -12,8 +13,7 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
-	modelBlock_ = Model::Create();
-
+	
 
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -21,11 +21,30 @@ void GameScene::Initialize() {
 	// カメラの初期化
 	camera_.Initialize();
 
-	// 自キャラの生成
-	player_ = new Player();
+	//===============================================================
+	// 自キャラ
+	//===============================================================
+	
+	// モデル
+	model_ = Model::CreateFromOBJ("player",true);
 
-	// 自キャラの初期化
-	player_->Initialize(model_,texturHandle_,&camera_);
+	// 生成
+	player_ = new Player();
+	// 初期化
+	player_->Initialize(model_,&camera_);
+
+	//================================================================
+	// 天球
+	//================================================================
+
+	// モデル
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
+	// 天球の生成
+	skydome_ = new Skydome();
+
+	// 初期化
+	skydome_->Initialize(modelSkydome_, &camera_);
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
@@ -122,8 +141,9 @@ void GameScene::Draw() {
 	//========= 描画開始=========================================
 	Model::PreDraw(dxCommon->GetCommandList());
 
-	// player_->Draw();
+	 player_->Draw();
 
+	skydome_->Draw();
 	
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -150,6 +170,7 @@ GameScene::~GameScene() {
 	delete modelBlock_;
 	delete player_;
 	delete debugCamera_;
+	delete modelSkydome_;
 	
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

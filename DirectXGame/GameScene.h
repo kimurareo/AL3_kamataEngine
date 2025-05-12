@@ -1,6 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
 #include "Player.h"
+#include "Skydome.h"
 #include <vector>
 
 using namespace KamataEngine;
@@ -26,7 +27,10 @@ public:
 	Model* model_ = nullptr;
 
 	// ブロックの3Dモデルデータ
-	Model* modelBlock_ = Model::CreateFromOBJ("cube");
+	Model* modelBlock_ = Model::CreateFromOBJ("block");
+
+	// 天球の3Dモデル
+	Model* modelSkydome_ = nullptr;
 
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
@@ -36,6 +40,9 @@ public:
 	
 	// 自キャラ
 	Player* player_ = nullptr;
+	
+	// 天球
+	Skydome* skydome_ = nullptr;
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;
