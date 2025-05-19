@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Skydome.h"
 #include <vector>
+#include "MapChipField.h"
 
 using namespace KamataEngine;
 
@@ -54,6 +55,11 @@ public:
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+	// マップチップフィールド
+	MapChipField* mapChipField_;
+
+	void GenerateBlocks();
 
 	// デストラクタ
 	~GameScene();
