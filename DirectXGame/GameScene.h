@@ -11,7 +11,6 @@ using namespace KamataEngine;
 class GameScene {
 public:
 
-
 	// 初期化
 	void Initialize();
 
@@ -51,7 +50,6 @@ public:
 	// デバッグカメラの生成
 	DebugCamera* debugCamera_ = nullptr;
 
-
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
@@ -63,7 +61,5 @@ public:
 
 	// デストラクタ
 	~GameScene();
-
-
 
 };

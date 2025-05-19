@@ -91,7 +91,6 @@ void GameScene::Initialize() {
 
 	GenerateBlocks();
 
-
 }
 
 
@@ -141,7 +140,6 @@ void GameScene::Update() {
 		camera_.UpdateMatrix();
 
 	}
-
 
 }
 
@@ -201,8 +199,6 @@ void GameScene::GenerateBlocks() {
 		}
 	}
 	
-
-
 }
 
 GameScene::~GameScene() { 
