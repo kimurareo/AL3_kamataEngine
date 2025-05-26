@@ -9,7 +9,7 @@ using namespace KamataEngine;
 void GameScene::Initialize() {
 
 	// ファイル名を指定してテクスチャを読み込む
-	texturHandle_ = TextureManager::Load("mario.png");
+	//texturHandle_ = TextureManager::Load("mario.png");
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
@@ -30,9 +30,7 @@ void GameScene::Initialize() {
 
 	// 生成
 	player_ = new Player();
-	// 初期化
-	player_->Initialize(model_,&camera_);
-
+	
 	//================================================================
 	// 天球
 	//================================================================
@@ -91,6 +89,11 @@ void GameScene::Initialize() {
 
 	GenerateBlocks();
 
+	// 初期化
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	player_->Initialize(model_, &camera_, playerPosition);
+
+
 }
 
 
@@ -148,12 +151,11 @@ void GameScene::Draw() {
 	//========= 描画開始=========================================
 	Model::PreDraw(dxCommon->GetCommandList());
 
-	 player_->Draw();
-
+	
 	skydome_->Draw();
 	
 
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+	 for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 
@@ -165,6 +167,8 @@ void GameScene::Draw() {
 
 		}
 	}
+
+	 player_->Draw();
 
 
 	Model::PostDraw();
