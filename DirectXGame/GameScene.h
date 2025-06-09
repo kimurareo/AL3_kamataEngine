@@ -4,6 +4,7 @@
 #include "Skydome.h"
 #include <vector>
 #include "MapChipField.h"
+#include "CameraController.h"
 
 using namespace KamataEngine;
 
@@ -43,6 +44,9 @@ public:
 	
 	// 天球
 	Skydome* skydome_ = nullptr;
+
+	// 追従カメラ
+	CameraController* cameraController_ = nullptr;
 
 	// デバッグカメラ有効
 	bool isDebugCameraActive_ = false;

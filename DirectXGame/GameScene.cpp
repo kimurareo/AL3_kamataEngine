@@ -93,6 +93,18 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	player_->Initialize(model_, &camera_, playerPosition);
 
+	// カメラコントローラーの生成
+	cameraController_ = new CameraController();
+	// 初期化
+	cameraController_->Initialize();
+	// 追従対象をセット
+	cameraController_->SetTarget(player_);
+    // リセット
+	cameraController_->Reset();
+
+	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
+	cameraController_->SetMovableArea(cameraArea);
+
 
 }
 
@@ -142,7 +154,16 @@ void GameScene::Update() {
 	
 		camera_.UpdateMatrix();
 
+		camera_.matView = cameraController_->GetViewProjection().matView;
+		camera_.matProjection = cameraController_->GetViewProjection().matProjection;
+		// ビュープロジェクション行列の転送
+		camera_.TransferMatrix();
+
 	}
+
+	// 追従カメラの更新
+	cameraController_->Update();
+
 
 }
 

@@ -3,7 +3,6 @@
 
 using namespace KamataEngine;
 
-
 class Player {
 public:
 
@@ -29,9 +28,9 @@ public:
 
 	Vector3 velocity_ = {};
 
-	static inline const float kAcceleration = 0.1f;
+	static inline const float kAcceleration = 0.01f;
 	static inline const float kAttenuation = 0.01f;
-	static inline const float kLimitRumSpeed = 5.0f;
+	static inline const float kLimitRumSpeed = 1.0f;
 
 	enum class LRDirection { 
 		kRight,
@@ -57,5 +56,9 @@ public:
 	static inline const float kLimitFallSpeed = 10.0f;
 	// ジャンプ初速
 	static inline const float kJumpAccleration = 1.0f;
+
+	const WorldTransform& GetWorladTransform() const { return worldTransform_; }
+
+	const Vector3& GetVelocity() const { return velocity_; }
 
 };
