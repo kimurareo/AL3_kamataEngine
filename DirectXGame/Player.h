@@ -3,6 +3,8 @@
 
 using namespace KamataEngine;
 
+class MapChipField;
+
 class Player {
 public:
 
@@ -60,5 +62,55 @@ public:
 	const WorldTransform& GetWorladTransform() const { return worldTransform_; }
 
 	const Vector3& GetVelocity() const { return velocity_; }
+
+	// マップチップによるフィールド
+	MapChipField* mapChipField_ = nullptr;
+
+	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+	
+	// キャラクターの当たり判定のサイズ
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
+
+	// 移動入力
+	void InputMove();
+	
+	// 旋回制御
+	void AnimateTurn();
+
+
+	// マップとの当たり判定情報
+	struct CollisionMapInfo {
+		// 天井衝突フラグ
+		bool ceiliing = false;
+		// 着地フラグ
+		bool landing = false;
+		// 壁接触フラグ
+		bool hitWall = false;
+		// 移動量
+		Vector3 move;
+	};
+
+	void CheckMapCollision(CollisionMapInfo& info);
+	
+	// 角
+	enum Corner {
+		kRightBottom,
+		kLeftBottom,
+		kRightTop,
+		kLeftTop,
+
+		kNumCorner
+	};
+
+	Vector3 CornerPosition(const Vector3& center, Corner corner);
+
+	void CheckMapCollisionUp(CollisionMapInfo& info);
+
+	static inline const float kBlank = 1.0f;
+	
+	void CheckMapMove(const CollisionMapInfo& info);
+
+	void CheckMapCeiling(const CollisionMapInfo& info);
 
 };

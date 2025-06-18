@@ -21,6 +21,15 @@ void GameScene::Initialize() {
 	// カメラの初期化
 	camera_.Initialize();
 
+	//===================================================
+	// マップチップの描画の初期化
+	//===================================================
+	mapChipField_ = new MapChipField;
+	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+
+	GenerateBlocks();
+
+
 	//===============================================================
 	// 自キャラ
 	//===============================================================
@@ -31,6 +40,8 @@ void GameScene::Initialize() {
 	// 生成
 	player_ = new Player();
 	
+	player_->SetMapChipField(mapChipField_);
+
 	//================================================================
 	// 天球
 	//================================================================
@@ -81,14 +92,7 @@ void GameScene::Initialize() {
 
 	}*/
 
-	//===================================================
-	// マップチップの描画の初期化
-	//===================================================
-	mapChipField_ = new MapChipField;
-	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
-
-	GenerateBlocks();
-
+	
 	// 初期化
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	player_->Initialize(model_, &camera_, playerPosition);

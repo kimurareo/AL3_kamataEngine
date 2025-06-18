@@ -4,6 +4,8 @@
 #include <algorithm>
 #include "MyMath.h"
 #include <algorithm>
+#include "MapChipField.h"
+
 
 using namespace KamataEngine;
 using namespace MathUtility;
@@ -15,22 +17,23 @@ void Player::Initialize(Model* model,  Camera* camera,const Vector3& position) {
 	assert(model);
 
 	model_ = model;
-
+	worldTransform_.translation_ = position;
 
 	// 引数の内容をメンバ変数に記録
 	camera_ = camera;
 
+	// ワールド変換の初期化
 	worldTransform_.Initialize();
-	worldTransform_.translation_ = position;
-
+	
+	// 初期回転
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 
 
 }
 
-void Player::Update() {
+// 移動入力
+void Player::InputMove() {
 
-	// 移動入力
 	// 左右移動操作
 	if (onGround_) {
 
@@ -82,19 +85,15 @@ void Player::Update() {
 		}
 
 	} else {
-	
+
 		velocity_ += Vector3(0, -kGravityAcceleration, 0);
 
 		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
-
 	}
+}
 
-	worldTransform_.translation_ += velocity_;
-
-	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_,worldTransform_.rotation_,worldTransform_.translation_);
-
-	// 行列を定数バッファに転送
-	worldTransform_.TransferMatrix();
+// 旋回制御
+void Player::AnimateTurn() {
 
 	if (turnTimer_ > 0.0f) {
 
@@ -107,6 +106,120 @@ void Player::Update() {
 		// 自キャラの角度を設定する
 		worldTransform_.rotation_.y = EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTurn);
 	}
+
+}
+
+
+void Player::CheckMapCollision(CollisionMapInfo& info) {
+
+	CheckMapCollisionUp(info);
+	//CheckMapCollisionDown(info);
+	//CheckMapCollisionUpRight(info);
+	//CheckMapCollisionUpLeft(info);
+
+}
+
+Vector3 Player::CornerPosition(const Vector3& center, Corner corner) {
+	
+	Vector3 offsetTable[kNumCorner] = {
+	    {+kWidth / 2.0f, -kHeight / 2.0f, 0},
+	    {-kWidth / 2.0f, -kHeight / 2.0f, 0},
+	    {+kWidth / 2.0f, +kHeight / 2.0f, 0},
+	    {-kWidth / 2.0f, +kHeight / 2.0f, 0},
+	};
+	
+	return center + offsetTable[static_cast<uint32_t>(corner)];
+}
+
+// マップチップ衝突判定上
+void Player::CheckMapCollisionUp(CollisionMapInfo& info) {
+
+	// 上昇あり
+	if (info.move.y <= 0) {
+		return;
+	}
+
+	// 移動後の4つの核の座標
+	std::array<Vector3, kNumCorner> positionNew;
+
+	for (uint32_t i = 0; i < positionNew.size(); ++i) {
+		positionNew[i] = CornerPosition(worldTransform_.translation_ + info.move, static_cast<Corner>(i));
+	}
+
+	MapChipType mapChipType;
+
+	// 真上の当たり判定を行う
+	bool hit = false;
+
+	// 左上の判定
+	MapChipField::IndexSet indexSet;
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kLeftTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+	
+	// 右上点の判定dd
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionNew[kRightTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+
+	// ブロックにヒット？
+	if (hit) {
+	
+		// めり込みを排除する方向に移動量を設定する
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + info.move + Vector3(0, +kHeight / 2.0f, 0));
+		// めり込み先ブロックの範囲矩形
+		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info.move.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (kHeight / 2.0f + kBlank));
+		// 天井に当たったことを記録する
+		info.ceiliing = true;
+
+	}
+
+}
+
+void Player::CheckMapMove(const CollisionMapInfo& info) {
+
+	// 移動
+	worldTransform_.translation_ += info.move;
+
+
+}
+
+void Player::CheckMapCeiling(const CollisionMapInfo& info) {
+
+	// 天井に当たった？
+	if (info.ceiliing) {
+	
+		DebugText::GetInstance()->ConsolePrintf("hitceiling\n");
+
+		velocity_.y = 0;
+
+	}
+
+}
+
+
+void Player::Update() {
+
+	// 移動入力
+	InputMove();
+	
+	// 衝突情報を初期化
+	CollisionMapInfo collisionMapInfo;
+	// 移動量に速度尾値をコピー
+	collisionMapInfo.move = velocity_;
+
+	// マップ衝突チェック
+	CheckMapCollision(collisionMapInfo);
+
+	// 判定結果を反映して移動させる
+	//worldTransform_.translation_ += velocity_;
+	CheckMapMove(collisionMapInfo);
+
 
 	// 着地フラグ
 	bool landing = false;
@@ -138,10 +251,22 @@ void Player::Update() {
 		}
 	}
 
+	// 旋回制御
+	AnimateTurn();
+
+	// アフェン変換行列の作成
+	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	// 行列を定数バッファに転送
+	worldTransform_.TransferMatrix();
+
+	
+
 }
+
 
 void Player::Draw() {
 
 	model_->Draw(worldTransform_,*camera_);
 
 }
+
