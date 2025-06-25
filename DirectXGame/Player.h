@@ -106,6 +106,7 @@ public:
 	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
 	void CheckMapCollisionUp(CollisionMapInfo& info);
+	void CheckMapCollisionDown(CollisionMapInfo& info);
 
 	static inline const float kBlank = 1.0f;
 	
@@ -113,4 +114,11 @@ public:
 
 	void CheckMapCeiling(const CollisionMapInfo& info);
 
+	// 接地状態の切り替え処理
+	void CheckMapLanding(const CollisionMapInfo& info);
+
+	static inline const float kAttenuationLanding = 1;
+
+	// 微小な数値
+	static inline const float kGroundSearchHeight = 0.1f;
 };
