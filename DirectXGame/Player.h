@@ -91,7 +91,7 @@ public:
 		Vector3 move;
 	};
 
-	void CheckMapCollision(CollisionMapInfo& info);
+	
 	
 	// 角
 	enum Corner {
@@ -103,16 +103,24 @@ public:
 		kNumCorner
 	};
 
-	Vector3 CornerPosition(const Vector3& center, Corner corner);
 
 	void CheckMapCollisionUp(CollisionMapInfo& info);
 	void CheckMapCollisionDown(CollisionMapInfo& info);
+	void CheckMapCollisionRight(CollisionMapInfo& info);
+	void CheckMapCollisionLeft(CollisionMapInfo& info);
 
 	static inline const float kBlank = 1.0f;
 	
+	void CheckMapCollision(CollisionMapInfo& info);
+
+	Vector3 CornerPosition(const Vector3& center, Corner corner);
+
 	void CheckMapMove(const CollisionMapInfo& info);
 
 	void CheckMapCeiling(const CollisionMapInfo& info);
+
+	// 5壁に接触しているときの判定
+	void CheckMapWall(const CollisionMapInfo& info);
 
 	// 接地状態の切り替え処理
 	void CheckMapLanding(const CollisionMapInfo& info);
@@ -121,4 +129,8 @@ public:
 
 	// 微小な数値
 	static inline const float kGroundSearchHeight = 0.1f;
+
+	static inline const float kAttenuationWall = 0.5f;
+
+
 };
