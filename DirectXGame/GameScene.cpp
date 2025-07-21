@@ -43,6 +43,22 @@ void GameScene::Initialize() {
 	
 	player_->SetMapChipField(mapChipField_);
 
+	// 初期化
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	player_->Initialize(model_, &camera_, playerPosition);
+
+	//===============================================
+	// 雑魚キャラ
+	//===============================================
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(8, 17);
+	enemy_->Initialize(model_, &camera_, enemyPosition);
+
+	// モデル
+	model_ = Model::CreateFromOBJ("enemy");
+
+	enemy_ = new Enemy();
+
+
 	//================================================================
 	// 天球
 	//================================================================
@@ -94,9 +110,7 @@ void GameScene::Initialize() {
 	}*/
 
 	
-	// 初期化
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	player_->Initialize(model_, &camera_, playerPosition);
+	
 
 	// カメラコントローラーの生成
 	cameraController_ = new CameraController();
@@ -110,10 +124,7 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
-	//===============================================
-	// 雑魚キャラ
-	//===============================================
-	enemy_ = new Enemy();
+	
 
 
 }

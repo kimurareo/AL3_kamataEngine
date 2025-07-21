@@ -7,10 +7,12 @@
 using namespace KamataEngine;
 
 // 初期化処理
-void Enemy::Initialize(Model* model, const Vector3& position) {
+void Enemy::Initialize(Model* model,Camera* camera, const Vector3& position) {
 
 	// モデルをメンバ変数に記録
 	model_ = model;
+
+	camera_ = camera;
 
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
@@ -27,6 +29,9 @@ void Enemy::Update() {
 	// アフェン変換行列の作成
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	
+	// 行列を定数バッファに転送
+	worldTransform_.TransferMatrix();
+
 
 }
 

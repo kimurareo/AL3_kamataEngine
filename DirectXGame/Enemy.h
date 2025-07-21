@@ -9,7 +9,7 @@ class Enemy {
 	public:
 
 	// 基本的な関数
-	void Initialize(Model* model, const Vector3& position);
+	void Initialize(Model* model, Camera* camera,const Vector3& position);
 	void Update();
 	void Draw();
 
