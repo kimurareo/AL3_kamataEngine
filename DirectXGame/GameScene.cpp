@@ -3,6 +3,7 @@
 #include "Skydome.h"
 #include "KamataEngine.h"
 #include "MyMath.h"
+#include "Enemy.h"
 
 using namespace KamataEngine;
 
@@ -109,6 +110,11 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
+	//===============================================
+	// 雑魚キャラ
+	//===============================================
+	enemy_ = new Enemy();
+
 
 }
 
@@ -117,6 +123,9 @@ void GameScene::Update() {
 
 	// 自キャラの更新
 	player_->Update();
+
+	// 雑魚キャラの更新
+	enemy_->Update();
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
@@ -193,8 +202,11 @@ void GameScene::Draw() {
 		}
 	}
 
+	 // プレイヤーの描画
 	 player_->Draw();
 
+	 // 雑魚キャラの描画
+	 enemy_->Draw();
 
 	Model::PostDraw();
 	//=========描画終了========================================
@@ -237,6 +249,7 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete modelSkydome_;
 	delete mapChipField_;
+	delete enemy_;
 	
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

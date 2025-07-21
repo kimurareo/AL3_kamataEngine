@@ -1,6 +1,7 @@
 #pragma once
 #include "KamataEngine.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Skydome.h"
 #include <vector>
 #include "MapChipField.h"
@@ -41,6 +42,9 @@ public:
 	
 	// 自キャラ
 	Player* player_ = nullptr;
+
+	// 雑魚キャラ
+	Enemy* enemy_ = nullptr;
 	
 	// 天球
 	Skydome* skydome_ = nullptr;
