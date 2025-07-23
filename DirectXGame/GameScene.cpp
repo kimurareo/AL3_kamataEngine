@@ -50,13 +50,17 @@ void GameScene::Initialize() {
 	//===============================================
 	// 雑魚キャラ
 	//===============================================
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(8, 17);
-	enemy_->Initialize(model_, &camera_, enemyPosition);
-
 	// モデル
 	model_ = Model::CreateFromOBJ("enemy");
 
+
 	enemy_ = new Enemy();
+
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(8, 18);
+	enemy_->Initialize(model_, &camera_, enemyPosition);
+
+	
+	
 
 
 	//================================================================
