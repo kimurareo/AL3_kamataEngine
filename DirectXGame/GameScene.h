@@ -44,7 +44,7 @@ public:
 	Player* player_ = nullptr;
 
 	// 雑魚キャラ
-	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
 	
 	// 天球
 	Skydome* skydome_ = nullptr;
@@ -66,6 +66,9 @@ public:
 	MapChipField* mapChipField_;
 
 	void GenerateBlocks();
+
+	// 全ての当たり判定を行う
+	void CheckAllCollision();
 
 	// デストラクタ
 	~GameScene();

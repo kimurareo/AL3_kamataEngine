@@ -1,9 +1,12 @@
 #pragma once
 #include "KamataEngine.h"
+#include "MyMath.h"
 
 using namespace KamataEngine;
 
 class MapChipField;
+
+class Enemy;
 
 class Player {
 public:
@@ -132,5 +135,13 @@ public:
 
 	static inline const float kAttenuationWall = 0.5f;
 
+	// ワールド座標を入れる変数
+	Vector3 GetWorldPosition();
+
+	// AABBを取得
+	AABB GetAABB();
+
+	// 衝突応答
+	void OnCollision(const Enemy* enemy);
 
 };

@@ -54,10 +54,16 @@ void GameScene::Initialize() {
 	model_ = Model::CreateFromOBJ("enemy");
 
 
-	enemy_ = new Enemy();
+	for (int32_t i = 0; i < 4; ++i) {
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(6 + i, 18);
+		newEnemy->Initialize(model_, &camera_, enemyPosition);
+
+		enemies_.push_back(newEnemy);
+	}
 
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(8, 18);
-	enemy_->Initialize(model_, &camera_, enemyPosition);
+	//enemy_->Initialize(model_, &camera_, enemyPosition);
 
 	
 	
@@ -140,7 +146,9 @@ void GameScene::Update() {
 	player_->Update();
 
 	// 雑魚キャラの更新
-	enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
@@ -192,6 +200,7 @@ void GameScene::Update() {
 	// 追従カメラの更新
 	cameraController_->Update();
 
+	 CheckAllCollision();
 
 }
 
@@ -221,7 +230,9 @@ void GameScene::Draw() {
 	 player_->Draw();
 
 	 // 雑魚キャラの描画
-	 enemy_->Draw();
+	 for (Enemy* enemy : enemies_) {
+		 enemy->Draw();
+	 }
 
 	Model::PostDraw();
 	//=========描画終了========================================
@@ -257,6 +268,36 @@ void GameScene::GenerateBlocks() {
 	
 }
 
+void GameScene::CheckAllCollision() {
+
+	// 判定対象1と2の座標
+	AABB aabb1, aabb2;
+
+	// 自キャラの座標
+	aabb1 = player_->GetAABB();
+
+	// 自キャラ地敵弾全ての当たり判定
+	for (Enemy* enemy : enemies_) {
+	
+		// 敵弾の座標
+		aabb2 = enemy->GetAABB();
+
+		// AABB同士の交差判定
+		if (IsCollision(aabb1, aabb2)) {
+		
+			// 自キャラの衝突時関数を呼び出す
+			player_->OnCollision(enemy);
+
+			// 敵の衝突時関数を呼び出す
+			enemy->OnCollision(player_);
+
+		
+		}
+
+	}
+
+}
+
 GameScene::~GameScene() { 
 	delete model_;
 	delete modelBlock_;
@@ -264,8 +305,10 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete modelSkydome_;
 	delete mapChipField_;
-	delete enemy_;
 	
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 	

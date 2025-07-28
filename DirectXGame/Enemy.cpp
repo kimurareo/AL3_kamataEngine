@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "KamataEngine.h"
 #include "MyMath.h"
+#include <numbers>
 
 
 
@@ -30,11 +31,14 @@ void Enemy::Initialize(Model* model,Camera* camera, const Vector3& position) {
 // 更新処理
 void Enemy::Update() {
 
+	// 敵の90ど回転
+	worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
+
 	// タイマーを加算
 	walkTimer_ += 1.0f / 60.0f;
 
 	// 回転アニメーション
-
+	worldTransform_.rotation_.x = std::sin(walkTimer_ * 5.0f);
 
 	// アフェン変換行列の作成
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
@@ -52,5 +56,35 @@ void Enemy::Update() {
 void Enemy::Draw() {
 	
 	model_->Draw(worldTransform_, *camera_);
+
+}
+
+Vector3 Enemy::GetWorldPosition() { 
+
+	// ワールド座標を入れる変数
+	Vector3 worldPos;
+	// ワールド行列の平行移動成分を取得
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+
+}
+
+void Enemy::OnCollision(const Player* player) { 
+	(void)player;
+}
+
+AABB Enemy::GetAABB() { 
+
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+
+	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.z - kWidth / 2.0f};
+	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
+
+	return aabb; 
 
 }
