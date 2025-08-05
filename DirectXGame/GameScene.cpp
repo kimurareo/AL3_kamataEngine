@@ -4,6 +4,7 @@
 #include "KamataEngine.h"
 #include "MyMath.h"
 #include "Enemy.h"
+#include "DeathParticles.h"
 
 using namespace KamataEngine;
 
@@ -66,7 +67,12 @@ void GameScene::Initialize() {
 	//enemy_->Initialize(model_, &camera_, enemyPosition);
 
 	
-	
+	// デスパーティクル
+	// パーティクルの3Dモデルデータの生成
+	modelParticle_ = Model::CreateFromOBJ("deathParticle", true);
+	deathParticles_ = new DeathParticles;
+	deathParticles_->Initialize(modelParticle_, &camera_, playerPosition);
+
 
 
 	//================================================================
@@ -120,8 +126,6 @@ void GameScene::Initialize() {
 	}*/
 
 	
-	
-
 	// カメラコントローラーの生成
 	cameraController_ = new CameraController();
 	// 初期化
@@ -150,6 +154,11 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 
+	// デスパーティクルの更新
+	if (deathParticles_) {
+		deathParticles_->Update();
+	}
+
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -165,7 +174,7 @@ void GameScene::Update() {
 
 		}
 	}
-
+	
 
 	// デバッグカメラの更新
 	debugCamera_->Update();
@@ -232,6 +241,13 @@ void GameScene::Draw() {
 	 // 雑魚キャラの描画
 	 for (Enemy* enemy : enemies_) {
 		 enemy->Draw();
+	 }
+
+	 // パーティクルの描画
+	 if (deathParticles_) {
+	 
+	 deathParticles_->Draw();
+
 	 }
 
 	Model::PostDraw();
@@ -305,7 +321,9 @@ GameScene::~GameScene() {
 	delete debugCamera_;
 	delete modelSkydome_;
 	delete mapChipField_;
-	
+	delete deathParticles_;
+
+
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
 	}

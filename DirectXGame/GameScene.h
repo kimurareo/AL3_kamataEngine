@@ -6,6 +6,7 @@
 #include <vector>
 #include "MapChipField.h"
 #include "CameraController.h"
+#include "DeathParticles.h"
 
 using namespace KamataEngine;
 
@@ -69,6 +70,13 @@ public:
 
 	// 全ての当たり判定を行う
 	void CheckAllCollision();
+
+	
+	// パーティクル
+	KamataEngine::Model* modelParticle_ = nullptr;
+
+	// デスパーティクルのインスタンスを持たせる
+	DeathParticles* deathParticles_ = nullptr;
 
 	// デストラクタ
 	~GameScene();
