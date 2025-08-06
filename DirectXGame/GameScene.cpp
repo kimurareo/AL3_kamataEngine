@@ -169,6 +169,8 @@ void GameScene::Update() {
 			// アフェン変換行列の作成
 			worldTransformBlock->matWorld_ = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
 
+
+
 			// 定数バッファ二に転送する
 			worldTransformBlock->TransferMatrix();
 

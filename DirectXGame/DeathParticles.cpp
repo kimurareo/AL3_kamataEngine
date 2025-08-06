@@ -36,6 +36,9 @@ void DeathParticles::Initialize(Model* model, Camera* camera, const Vector3& pos
 void DeathParticles::Update() {
 
 	  for (WorldTransform& worldTransform : worldTransforms_) {
+
+		  worldTransform.matWorld_ = MakeAffineMatrix(worldTransform.scale_, worldTransform.rotation_, worldTransform.translation_);
+
 		worldTransform.TransferMatrix();
 	}
 	
