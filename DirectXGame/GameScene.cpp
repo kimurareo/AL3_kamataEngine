@@ -15,8 +15,6 @@ void GameScene::Initialize() {
 
 	// 3Dモデルの生成
 	model_ = Model::Create();
-	
-
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 
@@ -28,7 +26,6 @@ void GameScene::Initialize() {
 	//===================================================
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
-
 	GenerateBlocks();
 
 
@@ -36,11 +33,13 @@ void GameScene::Initialize() {
 	// 自キャラ
 	//===============================================================
 	
+	// 生成
+	player_ = new Player();
+
 	// モデル
 	model_ = Model::CreateFromOBJ("player",true);
 
-	// 生成
-	player_ = new Player();
+	
 	
 	player_->SetMapChipField(mapChipField_);
 
@@ -72,6 +71,8 @@ void GameScene::Initialize() {
 	//modelParticle_ = Model::CreateFromOBJ("deathParticle", true);
 	//deathParticles_ = new DeathParticles;
 	//deathParticles_->Initialize(modelParticle_, &camera_, playerPosition);
+
+	modelParticle_ = Model::CreateFromOBJ("deathParticle", true);
 
 
 
@@ -152,28 +153,22 @@ void GameScene::Update() {
 		case Phase::kPlay:
 			// ゲームプレイフェーズの処理
 
-		    // ゲームプレイフェーズの処理
-		    if (player_->IsDead() == true) {
-			    // デス演出フェーズに切り替え
+			if (player_->IsDead() == true) {
 			    phase_ = Phase::kDeath;
+			    const Vector3& deathParticlesPosition = player_->GetWorldPosition();
 
-			    // 自キャラの座標を取得
-			    const KamataEngine::Vector3 deathParticlesPosition = player_->GetWorldPosition();
-
-			    // パーティクル
-			    deathParticles_ = new DeathParticles();
+				deathParticles_ = new DeathParticles();
 			    deathParticles_->Initialize(modelParticle_, &camera_, deathParticlesPosition);
-		    }		
 
-			
-
-			break;
-
+			}
+		    break;
 		case Phase::kDeath:
 			// デス演出の処理
 		    // デスパーティクルの更新
 		    deathParticles_->Update();
-		   
+		    if (deathParticles_ && deathParticles_->isFinished_) {
+			    finished_ = true;
+		    }
 
 			break;
 
@@ -240,6 +235,10 @@ void GameScene::Update() {
 	// 全ての当たり判定
 	CheckAllCollision();
 
+	if (deathParticles_) {
+		deathParticles_->Update();  
+	}
+
 }
 
 void GameScene::Draw() {
@@ -274,9 +273,7 @@ void GameScene::Draw() {
 
 	 // パーティクルの描画
 	 if (deathParticles_) {
-	 
 	 deathParticles_->Draw();
-
 	 }
 
 	Model::PostDraw();

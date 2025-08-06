@@ -360,7 +360,6 @@ void Player::CheckMapMove(const CollisionMapInfo& info) {
 	// 移動
 	worldTransform_.translation_ += info.move;
 
-
 }
 
 void Player::CheckMapCeiling(const CollisionMapInfo& info) {
@@ -491,9 +490,11 @@ void Player::Update() {
 	InputMove();
 	
 	// 衝突情報を初期化
-	CollisionMapInfo collisionMapInfo;
+	CollisionMapInfo collisionMapInfo = {};
 	// 移動量に速度尾値をコピー
 	collisionMapInfo.move = velocity_;
+	collisionMapInfo.landing = false;
+	collisionMapInfo.hitWall = false;
 
 	// 2マップ衝突チェック
 	CheckMapCollision(collisionMapInfo);
@@ -550,8 +551,6 @@ void Player::Update() {
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	// 行列を定数バッファに転送
 	worldTransform_.TransferMatrix();
-
-	
 
 }
 
