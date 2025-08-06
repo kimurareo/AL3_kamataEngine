@@ -144,4 +144,10 @@ public:
 	// 衝突応答
 	void OnCollision(const Enemy* enemy);
 
+	// デスフラグ
+	bool isDead_ = false;
+
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
+
 };
