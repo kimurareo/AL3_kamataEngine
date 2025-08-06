@@ -69,9 +69,9 @@ void GameScene::Initialize() {
 	
 	// デスパーティクル
 	// パーティクルの3Dモデルデータの生成
-	modelParticle_ = Model::CreateFromOBJ("deathParticle", true);
-	deathParticles_ = new DeathParticles;
-	deathParticles_->Initialize(modelParticle_, &camera_, playerPosition);
+	//modelParticle_ = Model::CreateFromOBJ("deathParticle", true);
+	//deathParticles_ = new DeathParticles;
+	//deathParticles_->Initialize(modelParticle_, &camera_, playerPosition);
 
 
 
@@ -152,9 +152,6 @@ void GameScene::Update() {
 		case Phase::kPlay:
 			// ゲームプレイフェーズの処理
 
-			// 全ての当たり判定
-		    CheckAllCollision();
-
 		    // ゲームプレイフェーズの処理
 		    if (player_->IsDead() == true) {
 			    // デス演出フェーズに切り替え
@@ -167,6 +164,8 @@ void GameScene::Update() {
 			    deathParticles_ = new DeathParticles();
 			    deathParticles_->Initialize(modelParticle_, &camera_, deathParticlesPosition);
 		    }		
+
+			
 
 			break;
 
@@ -237,6 +236,10 @@ void GameScene::Update() {
 			worldTransformBlock->TransferMatrix();
 		}
 	}
+
+	// 全ての当たり判定
+	CheckAllCollision();
+
 }
 
 void GameScene::Draw() {

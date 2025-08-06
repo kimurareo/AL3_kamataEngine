@@ -81,6 +81,7 @@ void DeathParticles::Update() {
 
 void DeathParticles::Draw() {
 
+
 	for (WorldTransform& worldTransform : worldTransforms_) {
 		model_->Draw(worldTransform, *camera_,&objectColor_);
 	}

@@ -46,7 +46,7 @@ public:
 
 
 	// ワールド変換データ
-	 KamataEngine::WorldTransform worldTransform_;
+	KamataEngine::WorldTransform worldTransform_;
 
 
 };
