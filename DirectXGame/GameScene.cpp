@@ -142,8 +142,6 @@ void GameScene::Initialize() {
 	cameraController_->SetMovableArea(cameraArea);
 
 	
-
-
 }
 
 
