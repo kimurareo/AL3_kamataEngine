@@ -557,7 +557,10 @@ void Player::Update() {
 
 void Player::Draw() {
 
-	model_->Draw(worldTransform_,*camera_);
+	// プレイヤーを生きている時だけ表示させる
+	if (isDead_ == false) {
 
+		model_->Draw(worldTransform_, *camera_);
+	}
 }
 

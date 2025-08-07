@@ -92,6 +92,8 @@ public:
 	// 終了フラグ
 	bool finished_ = false;
 
+	bool IsFinished() const { return finished_; }
+
 	// デストラクタ
 	~GameScene();
 
