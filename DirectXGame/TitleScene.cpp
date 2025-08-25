@@ -38,6 +38,21 @@ void TitleScene::Initialize() {
 
 // 更新
 void TitleScene::Update() {
+
+	// アフェン変換の行列の作成
+	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	// 行列を定数バッファに転送
+	worldTransform_.TransferMatrix();
+
+	// 回転
+	rotate_ += 0.1f;
+	worldTransformPlayer_.rotation_.y = sin(rotate_) + std::numbers::pi_v<float>;
+
+	worldTransformPlayer_.matWorld_ = MakeAffineMatrix(worldTransformPlayer_.scale_, worldTransformPlayer_.rotation_, worldTransformPlayer_.translation_);
+
+	worldTransformPlayer_.TransferMatrix();
+
+
 	switch (phase_) {
 	case Phase::kMain:
 		// タイトルシーンの終了条件
