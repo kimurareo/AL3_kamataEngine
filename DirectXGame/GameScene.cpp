@@ -5,6 +5,7 @@
 #include "MyMath.h"
 #include "Enemy.h"
 #include "DeathParticles.h"
+#include "Fade.h"
 
 using namespace KamataEngine;
 
@@ -142,11 +143,20 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
 	cameraController_->SetMovableArea(cameraArea);
 
-	
+	// フェーズインから開始
+	phase_ = Phase::kFadeIn;
+
+	// フェード
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
+
 }
 
 
 void GameScene::Update() {
+
+	
 
 	switch (phase_) {
 
@@ -167,11 +177,28 @@ void GameScene::Update() {
 		    // デスパーティクルの更新
 		    deathParticles_->Update();
 		    if (deathParticles_ && deathParticles_->isFinished_) {
-			    finished_ = true;
-		    }
+ 
+				phase_ = Phase::kFadeOut;
+			    fade_->Start(Fade::Status::FadeOut, 1.0f);
+
+			}
 
 			break;
 
+			case Phase::kFadeIn:
+		    // フェード
+		    fade_->Update();
+		    if (fade_->IsFinished()) {
+			    phase_ = Phase::kPlay;
+		    }
+		    break;
+	    case Phase::kFadeOut:
+		    // フェード
+		    fade_->Update();
+		    if (fade_->IsFinished()) {
+			    finished_ = true;
+		    }
+		    break;
 
 	}
 
@@ -263,8 +290,10 @@ void GameScene::Draw() {
 		}
 	}
 
-	 // プレイヤーの描画
-	 player_->Draw();
+	 // 自キャラの描画
+	if (phase_ == Phase::kPlay || phase_ == Phase::kFadeIn) {
+		player_->Draw();
+	}
 
 	 // 雑魚キャラの描画
 	 for (Enemy* enemy : enemies_) {
@@ -275,6 +304,9 @@ void GameScene::Draw() {
 	 if (deathParticles_) {
 	 deathParticles_->Draw();
 	 }
+
+	 // フェード
+	 fade_->Draw();
 
 	Model::PostDraw();
 	//=========描画終了========================================
@@ -362,7 +394,10 @@ void GameScene::ChangePhase() {
 
 	case Phase::kDeath:
 		// デス演出フェーズの処理
-
+		if (deathParticles_) {
+			// シーン終了
+			finished_ = true;
+		}
 
 		break;
 	}
