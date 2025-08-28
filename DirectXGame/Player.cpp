@@ -14,7 +14,7 @@ using namespace MathUtility;
 void Player::Initialize(Model* model,  Camera* camera,const Vector3& position) {
 
 	// NULLポインタチェック
-	assert(model);
+	//assert(model);
 
 	model_ = model;
 	worldTransform_.translation_ = position;

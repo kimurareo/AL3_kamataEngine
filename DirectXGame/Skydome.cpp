@@ -3,7 +3,7 @@
 void Skydome::Initialize(Model* model, Camera* camera) {
 
 	// NULLポインタチェック
-	assert(model);
+	//assert(model);
 
 	model_ = model;
 
