@@ -97,6 +97,10 @@ public:
 
 	bool IsFinished() const { return finished_; }
 
+	  bool isClear_ = false;
+
+	 bool IsClear() const { return isClear_; } 
+
 	// フェード
 	Fade* fade_ = nullptr;
 

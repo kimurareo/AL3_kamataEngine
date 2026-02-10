@@ -31,20 +31,31 @@ void Player::Initialize(Model* model,  Camera* camera,const Vector3& position) {
 
 }
 
+// ゴールとプレイヤーの当たり判定
+bool CheckAABBCollision(const Vector3& posA, const Vector3& sizeA, const Vector3& posB, const Vector3& sizeB) {
+	return abs(posA.x - posB.x) <= (sizeA.x + sizeB.x) * 0.5f && abs(posA.y - posB.y) <= (sizeA.y + sizeB.y) * 0.5f && abs(posA.z - posB.z) <= (sizeA.z + sizeB.z) * 0.5f;
+}
+
+
 // 移動入力
 void Player::InputMove() {
 
-	// 左右移動操作
+	//==============================
+	// 地面にいるとき
+	//==============================
 	if (onGround_) {
 
+		// 着地したらジャンプ回数リセット
+		jumpCount_ = 0;
+
+		// 左右移動入力
 		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
 
-			// 左右加速
 			Vector3 acceleration = {};
+
 			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
 
 				velocity_.x *= (1.0f - kAttenuation);
-
 				acceleration.x += kAcceleration;
 
 				if (lrDirection_ != LRDirection::kRight) {
@@ -54,11 +65,8 @@ void Player::InputMove() {
 				}
 
 			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-				if (velocity_.x > 0.0f) {
 
-					velocity_.x *= (1.0f, -kAttenuation);
-				}
-
+				velocity_.x *= (1.0f - kAttenuation);
 				acceleration.x -= kAcceleration;
 
 				if (lrDirection_ != LRDirection::kLeft) {
@@ -68,27 +76,35 @@ void Player::InputMove() {
 				}
 			}
 
-			// 加速・減速
+			// 加速
 			velocity_ += acceleration;
 
 			// 最大速度制限
 			velocity_.x = std::clamp(velocity_.x, -kLimitRumSpeed, kLimitRumSpeed);
 
 		} else {
-
-			// 非入力時は移動減衰をかける
+			// 入力なし減衰
 			velocity_.x *= (1.0f - kAttenuation);
 		}
-
-		if (Input::GetInstance()->PushKey(DIK_UP)) {
-			velocity_ += Vector3(0, kJumpAccleration, 0);
-		}
-
-	} else {
-
-		velocity_ += Vector3(0, -kGravityAcceleration, 0);
-
+	}
+	//==============================
+	// 空中
+	//==============================
+	else {
+		velocity_.y -= kGravityAcceleration;
 		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+	}
+
+	//==============================
+	// ジャンプ処理（地面・空中共通）
+	//==============================
+	if (Input::GetInstance()->TriggerKey(DIK_UP) && jumpCount_ < 2) {
+
+		// 縦速度をリセット（重要）
+		velocity_.y = 0.0f;
+
+		velocity_.y += kJumpAccleration;
+		jumpCount_++;
 	}
 }
 
@@ -514,35 +530,11 @@ void Player::Update() {
 	// 6
 	CheckMapLanding(collisionMapInfo);
 
-	//// 着地フラグ
-	//bool landing = false;
+	// ゴール判定
+	if (CheckAABBCollision(worldTransform_.translation_, playerSize_, goalPos_, goalSize_)) {
 
-	//// 地面との当たり判定
-	//if (velocity_.y < 0) {
-	//	if (worldTransform_.translation_.y <= 1.0f) {
-	//		landing = true;
-	//	}
-	//}
-
-	//// 接地判定
-	//if (onGround_) {
-	//// ジャンプ開始
-	//	if (velocity_.y > 0.0f) {
-	//	onGround_ = false;
-	//	}
-	//} else {
-	//// 着地
-	//	if (landing) {
-	//	// めり込み
-	//		worldTransform_.translation_.y = 1.0f;
-	//		// 摩擦で横方向速度が減速する
-	//		velocity_.x *= (1.0f - kAttenuation);
-	//		// 下方向速度をリセット
-	//		velocity_.y = 0.0f;
-	//		// 接地状態に移行
-	//		onGround_ = true;
-	//	}
-	//}
+		isGoal_ = true;
+	}
 
 	// 7旋回制御
 	AnimateTurn();
@@ -553,6 +545,7 @@ void Player::Update() {
 	worldTransform_.TransferMatrix();
 
 }
+
 
 
 void Player::Draw() {

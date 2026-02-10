@@ -2,12 +2,15 @@
 #include <KamataEngine.h>
 #include "GameScene.h"
 #include "TitleScene.h"
+#include "ClearScene.h"
 
 using namespace KamataEngine;
 
 // シーンはグローバル変数で宣言
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
+ClearScene* clearScene = nullptr; 
+
 
 // シーン
 enum class Scene { 
@@ -15,6 +18,7 @@ enum class Scene {
 
 	kTitle,
 	kGame,
+	kClear,
 };
 
 
@@ -22,68 +26,96 @@ enum class Scene {
 Scene scene = Scene::kUnknown;
 
 // シーン切り替え処理
-void ChangeScene() { 
-	
-	switch (scene) { case Scene::kTitle:
+void ChangeScene() {
+
+	switch (scene) {
+
+	case Scene::kTitle:
 		if (titleScene->IsFinished()) {
-		
-			// シーン変更
+
 			scene = Scene::kGame;
-			// 旧シーンの開放
+
 			delete titleScene;
 			titleScene = nullptr;
-			// 新シーンの生成と初期化
-			gameScene  = new GameScene;
+
+			gameScene = new GameScene;
 			gameScene->Initialize();
 		}
 		break;
-		
-		case Scene::kGame:
+
+	case Scene::kGame:
 		if (gameScene->IsFinished()) {
-		
-			// シーン変更
-			scene = Scene::kTitle;
-			// 旧シーンの開放
+
+			// ★ここが分岐ポイント
+			bool isClear = gameScene->IsClear();
+
 			delete gameScene;
 			gameScene = nullptr;
 
-			// 新シーンの生成と初期化
+			if (isClear) {
+				scene = Scene::kClear;
+				clearScene = new ClearScene;
+				clearScene->Initialize();
+			} else {
+				scene = Scene::kTitle;
+				titleScene = new TitleScene;
+				titleScene->Initialize();
+			}
+		}
+		break;
+
+	case Scene::kClear:
+		if (clearScene->IsFinished()) {
+
+			scene = Scene::kTitle;
+
+			delete clearScene;
+			clearScene = nullptr;
+
 			titleScene = new TitleScene;
 			titleScene->Initialize();
 		}
 		break;
-
 	}
-
 }
+
 
 // シーンの更新
 void UpdateScene() {
 	switch (scene) {
-	
+
 	case Scene::kTitle:
 		titleScene->Update();
 		break;
+
 	case Scene::kGame:
 		gameScene->Update();
 		break;
-	
+
+	case Scene::kClear:
+		clearScene->Update(); // ★追加
+		break;
 	}
 }
 
 // シーンの描画
 void DrawScene() {
 	switch (scene) {
-	
+
 	case Scene::kTitle:
 		titleScene->Draw();
 		break;
+
 	case Scene::kGame:
 		gameScene->Draw();
 		break;
-	
+
+	case Scene::kClear:
+		clearScene->Draw(); // ★追加
+		break;
 	}
 }
+
 
 
 // Windowsアプリでのエントリーポイント(main関数)

@@ -152,83 +152,78 @@ void GameScene::Initialize() {
 	fade_->Start(Fade::Status::FadeIn, 1.0f);
 
 }
-
-
 void GameScene::Update() {
-
-	
 
 	switch (phase_) {
 
-		case Phase::kPlay:
-			// ゲームプレイフェーズの処理
-
-			if (player_->IsDead() == true) {
-			    phase_ = Phase::kDeath;
-			    const Vector3& deathParticlesPosition = player_->GetWorldPosition();
-
-				deathParticles_ = new DeathParticles();
-			    deathParticles_->Initialize(modelParticle_, &camera_, deathParticlesPosition);
-
-			}
-		    break;
-		case Phase::kDeath:
-			// デス演出の処理
-		    // デスパーティクルの更新
-		    deathParticles_->Update();
-		    if (deathParticles_ && deathParticles_->isFinished_) {
- 
-				phase_ = Phase::kFadeOut;
-			    fade_->Start(Fade::Status::FadeOut, 1.0f);
-
-			}
-
+	case Phase::kPlay:
+		//==============================
+		// ゴール判定（最優先）
+		//==============================
+		if (player_->IsGoal()) {
+			isClear_ = true; 
+			phase_ = Phase::kFadeOut;
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
 			break;
+		}
 
-			case Phase::kFadeIn:
-		    // フェード
-		    fade_->Update();
-		    if (fade_->IsFinished()) {
-			    phase_ = Phase::kPlay;
-		    }
-		    break;
-	    case Phase::kFadeOut:
-		    // フェード
-		    fade_->Update();
-		    if (fade_->IsFinished()) {
-			    finished_ = true;
-		    }
-		    break;
+		//==============================
+		// デス判定
+		//==============================
+		if (player_->IsDead()) {
+			phase_ = Phase::kDeath;
 
+			const Vector3& deathParticlesPosition = player_->GetWorldPosition();
+			deathParticles_ = new DeathParticles();
+			deathParticles_->Initialize(modelParticle_, &camera_, deathParticlesPosition);
+		}
+		break;
+
+	case Phase::kDeath:
+		// デス演出の処理
+		if (deathParticles_) {
+			deathParticles_->Update();
+			if (deathParticles_->isFinished_) {
+				phase_ = Phase::kFadeOut;
+				fade_->Start(Fade::Status::FadeOut, 1.0f);
+			}
+		}
+		break;
+
+	case Phase::kFadeIn:
+		// フェード
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			phase_ = Phase::kPlay;
+		}
+		break;
+
+	case Phase::kFadeOut:
+		// フェード
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			finished_ = true;
+		}
+		break;
 	}
 
-
-	// 自キャラの更新
+	//==============================
+	// 各オブジェクトの更新
+	//==============================
 	player_->Update();
-
-	// 天球の更新
 	skydome_->Update();
 
-	// 敵の更新
-	// enemy_->Update();
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 	}
 
-	// カメラコントローラーの更新
 	cameraController_->Update();
-
-	// 行列を定義バッファに転送
-	// worldTransform_.TransferMatrix();
-
-	// debugCamera_->Update();
 
 #ifdef _DEBUG
 	if (Input::GetInstance()->TriggerKey(DIK_0)) {
 		isDebugCameraActive_ = !isDebugCameraActive_;
 	}
-
-#endif // _DEBUG
+#endif
 
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
@@ -238,35 +233,25 @@ void GameScene::Update() {
 	} else {
 		camera_.matView = cameraController_->GetViewProjection().matView;
 		camera_.matProjection = cameraController_->GetViewProjection().matProjection;
-		// ビュープロジェクション行列の更新と転送
 		camera_.TransferMatrix();
 	}
-	// ブロックの更新
-	for (std::vector<KamataEngine::WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+
+	// ブロック更新
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
-			if (!worldTransformBlock) {
+			if (!worldTransformBlock)
 				continue;
-			}
-
-			// アフィン変換行列の作成
 
 			worldTransformBlock->matWorld_ = MakeAffineMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-			////定数バッファに転送する
 
 			worldTransformBlock->TransferMatrix();
 		}
 	}
 
-	// 全ての当たり判定
+	// 当たり判定
 	CheckAllCollision();
-
-	if (deathParticles_) {
-		deathParticles_->Update();  
-	}
-
 }
+
 
 void GameScene::Draw() {
 	

@@ -9,6 +9,18 @@ class MapChipField;
 class Enemy;
 
 class Player {
+
+	private:
+	// プレイヤー当たり判定サイズ
+	Vector3 playerSize_ = {1.0f, 2.0f, 1.0f};
+
+	// ゴール情報
+	Vector3 goalPos_ = {95.0f, 0.0f, 0.0f};
+	Vector3 goalSize_ = {1.0f, 2.0f, 1.0f};
+
+	bool isGoal_ = false;
+
+
 public:
 
 	// 初期化関数
@@ -149,5 +161,13 @@ public:
 
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
+
+	// ジャンプカウント
+	int jumpCount_ = 0;
+	// 最大ジャンプ回数
+	int maxJump_ = 2;
+
+	bool IsGoal() const { return isGoal_; }
+
 
 };
